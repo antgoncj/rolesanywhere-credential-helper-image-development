@@ -2,7 +2,7 @@ name: Build, Test and Release Docker Images
 
 on:
   push:
-    branches: [ main ]
+    branches: [ image-gha-workflow-development ]
     paths:
       - 'docker_image_resources/**'
       - '.github/workflows/build_docker_image.yml'
