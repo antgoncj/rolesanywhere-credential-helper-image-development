@@ -91,10 +91,10 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v2
       
       - name: Set up test environment
-        env:
-            REPOSITORY: ${{env.STAGING_REPOSITORY}}
         run: |
           docker pull ${{ env.REGISTRY }}/${{ env.STAGING_REPOSITORY }}:${{ github.sha }}-${{matrix.platform}}
+            
+          echo "REPOSITORY=${{ env.STAGING_REPOSITORY }}" >> $GITHUB_ENV
 
           mkdir -p docker_image_resources/tests/certs
           
