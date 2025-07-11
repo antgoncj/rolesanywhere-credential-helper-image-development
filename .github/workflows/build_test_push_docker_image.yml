@@ -241,7 +241,7 @@ jobs:
         id: tag_and_push  
         run: |
           docker pull ${{ env.REGISTRY }}/${{ env.STAGING_REPOSITORY }}:${{ github.sha }}-amd64
-          #docker pull ${{ env.REGISTRY }}/${{ env.STAGING_REPOSITORY }}:${{ github.sha }}-arm64
+          docker pull ${{ env.REGISTRY }}/${{ env.STAGING_REPOSITORY }}:${{ github.sha }}-arm64
           # extract version from executable
           VERSION=$(docker run --rm ${{ env.REGISTRY }}/${{ env.STAGING_REPOSITORY }}:${{ github.sha }}-amd64 version)
           TIMESTAMP=$(date +%Y.%m.%d.%H.%M)
