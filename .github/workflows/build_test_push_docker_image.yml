@@ -250,14 +250,14 @@ jobs:
           docker push ${{ env.REGISTRY }}/${{ env.PUBLIC_REPOSITORY }}:$VERSION-amd64-$TIMESTAMP
           AMD64_IMAGE_SHA=$(docker push ${{ env.REGISTRY }}/${{ env.PUBLIC_REPOSITORY }}:latest-amd64 | grep digest | cut -d' ' -f3 )
           echo "amd64_image_sha=$AMD64_IMAGE_SHA" >> "$GITHUB_OUTPUT"
-          #docker tag ${{ env.REGISTRY }}/${{ env.STAGING_REPOSITORY }}:${{ github.sha }}-arm64 ${{ env.REGISTRY }}/${{ env.PUBLIC_REPOSITORY }}:$VERSION-arm64-$TIMESTAMP
-          #docker tag ${{ env.REGISTRY }}/${{ env.STAGING_REPOSITORY }}:${{ github.sha }}-arm64 ${{ env.REGISTRY }}/${{ env.PUBLIC_REPOSITORY }}:latest-arm64
-          #docker push ${{ env.REGISTRY }}/${{ env.PUBLIC_REPOSITORY }}:$VERSION-arm64-$TIMESTAMP
-          #ARM64_IMAGE_SHA=$(docker push ${{ env.REGISTRY }}/${{ env.PUBLIC_REPOSITORY }}:latest-arm64 | grep digest | cut -d' ' -f3 )
-          #echo "arm64_image_sha=$ARM64_IMAGE_SHA" >> "$GITHUB_OUTPUT"
+          docker tag ${{ env.REGISTRY }}/${{ env.STAGING_REPOSITORY }}:${{ github.sha }}-arm64 ${{ env.REGISTRY }}/${{ env.PUBLIC_REPOSITORY }}:$VERSION-arm64-$TIMESTAMP
+          docker tag ${{ env.REGISTRY }}/${{ env.STAGING_REPOSITORY }}:${{ github.sha }}-arm64 ${{ env.REGISTRY }}/${{ env.PUBLIC_REPOSITORY }}:latest-arm64
+          docker push ${{ env.REGISTRY }}/${{ env.PUBLIC_REPOSITORY }}:$VERSION-arm64-$TIMESTAMP
+          ARM64_IMAGE_SHA=$(docker push ${{ env.REGISTRY }}/${{ env.PUBLIC_REPOSITORY }}:latest-arm64 | grep digest | cut -d' ' -f3 )
+          echo "arm64_image_sha=$ARM64_IMAGE_SHA" >> "$GITHUB_OUTPUT"
           docker manifest create ${{ env.REGISTRY }}/${{ env.PUBLIC_REPOSITORY }}:latest \
             ${{ env.REGISTRY }}/${{ env.PUBLIC_REPOSITORY }}@$AMD64_IMAGE_SHA \
-          # ${{ env.REGISTRY }}/${{ env.PUBLIC_REPOSITORY }}@$ARM64_IMAGE_SHA 
+            ${{ env.REGISTRY }}/${{ env.PUBLIC_REPOSITORY }}@$ARM64_IMAGE_SHA 
           echo "manifest_sha=$(docker manifest push ${{ env.REGISTRY }}/${{ env.PUBLIC_REPOSITORY }}:latest)" >> "$GITHUB_OUTPUT"
 
       - name: setup Notation CLI
