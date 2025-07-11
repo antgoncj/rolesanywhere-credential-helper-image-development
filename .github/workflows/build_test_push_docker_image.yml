@@ -5,7 +5,7 @@ on:
     branches: [ image-gha-workflow-development ]
     paths:
       - 'docker_image_resources/**'
-      - '.github/workflows/build_docker_image.yml'
+      - '.github/workflows/build_test_push_docker_image.yml'
       - '**/*.go'
       - 'go.mod'
       - 'go.sum'
