@@ -2,7 +2,7 @@ name: Build, Test and Release Docker Images
 
 on:
   push:
-    branches: [ test-workflow-behavior-on-push-and-tag ]
+    tags: [ 'v*.*.*' ]
 
 env:
   REGISTRY: ${{secrets.REGISTRY}}
