@@ -2,15 +2,7 @@ name: Build, Test and Release Docker Images
 
 on:
   push:
-    branches: [ image-gha-workflow-development ]
-    paths:
-      - 'docker_image_resources/**'
-      - '.github/workflows/build_test_push_docker_image.yml'
-      - '**/*.go'
-      - 'go.mod'
-      - 'go.sum'
-  workflow_dispatch:
-  workflow_call:
+    branches: [ test-workflow-behavior-on-push-and-tag ]
 
 env:
   REGISTRY: ${{secrets.REGISTRY}}
