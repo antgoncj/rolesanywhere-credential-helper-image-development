@@ -1,4 +1,4 @@
-#!/bin/bashMore actions
+#!/bin/bash
 set -euo pipefail
 
 if [ $(uname -m) = "x86_64" ]; then
@@ -56,7 +56,7 @@ if ! command -v kind &> /dev/null; then
   
   # Download and verify checksum
   echo "Verifying kind checksum..."
-  curl -LO "https://github.com/kubernetes-sigs/kind/releases/download/v0.29.0/kind-linux-${PLATFORM}.sha256sum"
+  curl -LO "https://github.com/kubernetes-sigs/kind/releases/download/${KIND_VERSION}/kind-linux-${PLATFORM}.sha256sum"
   if ! sha256sum -c kind-linux-${PLATFORM}.sha256sum; then
     echo "ERROR: kind checksum verification failed!"
     exit 1
@@ -66,7 +66,7 @@ if ! command -v kind &> /dev/null; then
   mv kind-linux-$PLATFORM kind
   chmod +x ./kind
   mv ./kind /usr/local/bin/
-  rm -f kind-linux-${PLATFORM}.sha256
+  rm -f kind-linux-${PLATFORM}.sha256sum
   echo "kind installed successfully"
 else
   echo "kind already installed: $(kind --version)"

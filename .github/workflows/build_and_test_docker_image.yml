@@ -1,21 +1,22 @@
-name: Build, Test and Release Docker Images
+name: Build and Test Credential Helper Docker Image
 
 on:
   push:
-    tags: [ 'v*.*.*' ]
+    branches: [ test-workflow-behavior-on-push-and-tag ]
 
 env:
   REGISTRY: ${{secrets.REGISTRY}}
   STAGING_REPOSITORY: ${{secrets.STAGING_REPOSITORY}}
   AWS_REGION: us-east-1
 
+permissions:
+    contents: read
+    packages: write
+    id-token: write   # This is required for requesting the JWT for AWS authentication
+
 jobs:
   build-and-push:
     name: Build Docker Images
-    permissions:
-      contents: read
-      packages: write
-      id-token: write   # This is required for requesting the JWT for AWS authentication
     strategy:
       matrix:
         include:
@@ -51,14 +52,11 @@ jobs:
           push: true
           tags: |
             ${{ env.REGISTRY }}/${{ env.STAGING_REPOSITORY }}:${{ github.sha }}-${{ matrix.platform }}
-          provenance: false
+          provenance: false # provenance must be disabled in order to prevent manifest creation failures 
 
   test-and-scan:
     name: Test and Scan Docker Images
     needs: build-and-push
-    permissions:
-      contents: read
-      id-token: write   # This is required for requesting the JWT for AWS authentication
     strategy:
       matrix:
         include:
@@ -204,71 +202,3 @@ jobs:
           else
             echo "Vulnerability scan passed. All thresholds are within acceptable limits."
           fi
-  publish-images-to-ecr:
-    name: Publish built images to ECR 
-    needs: test-and-scan
-    runs-on: ubuntu-24.04
-    permissions:
-      contents: read
-      id-token: write   # This is required for requesting the JWT for AWS authentication
-    env:
-      PUBLIC_REPOSITORY: ${{secrets.PUBLIC_REPOSITORY}}
-      AWS_SIGNER_PLUGIN_LINK: https://d2hvyiie56hcat.cloudfront.net/linux/amd64/plugin/latest/notation-aws-signer-plugin.zip
-      AWS_SIGNER_PLUGIN_FILENAME: notation-aws-signer-plugin.zip
-    steps:
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-        
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502
-        with:
-          role-to-assume: ${{ secrets.GH_ACCESS_ROLE }} 
-          aws-region: ${{ env.AWS_REGION }}
-
-      - name: Login to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v2
-
-      - name: Tag Images and Push to ECR
-        id: tag_and_push  
-        run: |
-          docker pull ${{ env.REGISTRY }}/${{ env.STAGING_REPOSITORY }}:${{ github.sha }}-amd64
-          docker pull ${{ env.REGISTRY }}/${{ env.STAGING_REPOSITORY }}:${{ github.sha }}-arm64
-          # extract version from executable
-          VERSION=$(docker run --rm ${{ env.REGISTRY }}/${{ env.STAGING_REPOSITORY }}:${{ github.sha }}-amd64 version)
-          TIMESTAMP=$(date +%Y.%m.%d.%H.%M)
-          docker tag ${{ env.REGISTRY }}/${{ env.STAGING_REPOSITORY }}:${{ github.sha }}-amd64 ${{ env.REGISTRY }}/${{ env.PUBLIC_REPOSITORY }}:$VERSION-amd64-$TIMESTAMP
-          docker tag ${{ env.REGISTRY }}/${{ env.STAGING_REPOSITORY }}:${{ github.sha }}-amd64 ${{ env.REGISTRY }}/${{ env.PUBLIC_REPOSITORY }}:latest-amd64
-          docker push ${{ env.REGISTRY }}/${{ env.PUBLIC_REPOSITORY }}:$VERSION-amd64-$TIMESTAMP
-          AMD64_IMAGE_SHA=$(docker push ${{ env.REGISTRY }}/${{ env.PUBLIC_REPOSITORY }}:latest-amd64 | grep digest | cut -d' ' -f3 )
-          echo "amd64_image_sha=$AMD64_IMAGE_SHA" >> "$GITHUB_OUTPUT"
-          docker tag ${{ env.REGISTRY }}/${{ env.STAGING_REPOSITORY }}:${{ github.sha }}-arm64 ${{ env.REGISTRY }}/${{ env.PUBLIC_REPOSITORY }}:$VERSION-arm64-$TIMESTAMP
-          docker tag ${{ env.REGISTRY }}/${{ env.STAGING_REPOSITORY }}:${{ github.sha }}-arm64 ${{ env.REGISTRY }}/${{ env.PUBLIC_REPOSITORY }}:latest-arm64
-          docker push ${{ env.REGISTRY }}/${{ env.PUBLIC_REPOSITORY }}:$VERSION-arm64-$TIMESTAMP
-          ARM64_IMAGE_SHA=$(docker push ${{ env.REGISTRY }}/${{ env.PUBLIC_REPOSITORY }}:latest-arm64 | grep digest | cut -d' ' -f3 )
-          echo "arm64_image_sha=$ARM64_IMAGE_SHA" >> "$GITHUB_OUTPUT"
-          docker manifest create ${{ env.REGISTRY }}/${{ env.PUBLIC_REPOSITORY }}:latest \
-            ${{ env.REGISTRY }}/${{ env.PUBLIC_REPOSITORY }}@$AMD64_IMAGE_SHA \
-            ${{ env.REGISTRY }}/${{ env.PUBLIC_REPOSITORY }}@$ARM64_IMAGE_SHA 
-          echo "manifest_sha=$(docker manifest push ${{ env.REGISTRY }}/${{ env.PUBLIC_REPOSITORY }}:latest)" >> "$GITHUB_OUTPUT"
-
-      - name: setup Notation CLI
-        uses: notaryproject/notation-action/setup@v1
-
-      - name: Retrieve AWS Signer Checksum value 
-        id: checksum
-        run: |
-          curl -LO ${{ env.AWS_SIGNER_PLUGIN_LINK}}
-          echo "signer_sha=$(sha256sum ${{env.AWS_SIGNER_PLUGIN_FILENAME}} | cut -f1 -d' ')" >> "$GITHUB_OUTPUT"
-
-      - name: Sign the amd64 image with notation 
-        uses: notaryproject/notation-action/sign@v1
-        with:
-          plugin_name: com.amazonaws.signer.notation.plugin
-          plugin_url: https://d2hvyiie56hcat.cloudfront.net/linux/amd64/plugin/latest/notation-aws-signer-plugin.zip 
-          plugin_checksum: ${{steps.checksum.outputs.signer_sha}} # Required in order to use the AWS signer plugin
-          key_id: ${{secrets.SIGNING_PROFILE}}
-          target_artifact_reference: |-
-            ${{ env.REGISTRY }}/${{ env.PUBLIC_REPOSITORY }}@${{steps.tag_and_push.outputs.manifest_sha}}
-            ${{ env.REGISTRY }}/${{ env.PUBLIC_REPOSITORY }}@${{steps.tag_and_push.outputs.amd64_image_sha}}
-            ${{ env.REGISTRY }}/${{ env.PUBLIC_REPOSITORY }}@${{steps.tag_and_push.outputs.arm64_image_sha}}

@@ -38,5 +38,5 @@ ENTRYPOINT ["/usr/local/bin/aws_signing_helper"]
 
 # Add labels
 LABEL maintainer="AWS IAM Roles Anywhere" \
-      version="1.7.1" \
+      version="1.7.0" \
       description="AWS IAM Roles Anywhere Credential Helper Docker Image"

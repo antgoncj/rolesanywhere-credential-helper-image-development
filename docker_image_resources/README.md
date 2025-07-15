@@ -44,7 +44,7 @@ The following environment variables can be configured in your `.env` file:
 These have default values if not specified:
 - `VERSION` - Image version tag (default: `latest`)
 - `REGISTRY` - Docker registry (default: `local`)
-- `IMAGE_NAME` - Image name (default: `iamra-credential-helper`)
+- `REPOSITORY` - Image name (default: `iamra-credential-helper`)
 
 ### AWS Resource ARNs (Required)
 These must be specified and do not have defaults:
@@ -86,8 +86,8 @@ The script will:
 2. Detect your platform architecture (amd64 or arm64)
 3. Build the Docker image using `docker buildx`
 4. Create two tags:
-   - `${REGISTRY}/${IMAGE_NAME}:${VERSION}-${PLATFORM}` (platform-specific)
-   - `${REGISTRY}/${IMAGE_NAME}:${VERSION}` (default)
+   - `${REGISTRY}/${REPOSITORY}:${VERSION}-${PLATFORM}` (platform-specific)
+   - `${REGISTRY}/${REPOSITORY}:${VERSION}` (default)
 
 ## Testing the Docker Image
 

@@ -4,11 +4,6 @@ set -euo pipefail
 # Test credentials and capture the output
 echo "Running get-caller-identity..."
 CALLER_IDENTITY=$(aws sts get-caller-identity --output json)
-if [ $? -ne 0 ]; then
-  echo "Failed to validate credentials with AWS"
-  exit 1
-fi
-
 echo "sts get-caller-identity call succeeded"
 
 # Extract the ARN from the response
