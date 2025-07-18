@@ -31,7 +31,7 @@ jobs:
         uses: actions/checkout@v4
         
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502
+        uses: aws-actions/configure-aws-credentials@stable
         with:
           role-to-assume: ${{ secrets.GH_ACCESS_ROLE }} 
           aws-region: ${{ env.AWS_REGION }}
@@ -68,7 +68,7 @@ jobs:
         uses: actions/checkout@v4
         
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502
+        uses: aws-actions/configure-aws-credentials@stable
         with:
           role-to-assume: ${{ secrets.GH_ACCESS_ROLE }}
           aws-region: ${{ env.AWS_REGION }}
@@ -78,6 +78,8 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v2
       
       - name: Set up test environment
+        env:
+          PCA_ARN : ${{ secrets.PCA_ARN }} 
         run: |
           docker pull ${{ env.REGISTRY }}/${{ env.STAGING_REPOSITORY }}:${{ github.sha }}-${{matrix.platform}}
             
@@ -97,20 +99,19 @@ jobs:
           CSR_CONTENT=$(cat /tmp/certificate.csr | base64 -w 0)
           
           # Issue certificate using AWS Private CA
-          CERTIFICATE_RESPONSE=$(aws acm-pca issue-certificate \
-            --certificate-authority-arn ${{ secrets.PCA_ARN }} \
+          CERTIFICATE_ARN=$(aws acm-pca issue-certificate \
+            --certificate-authority-arn $PCA_ARN \
             --csr $CSR_CONTENT \
             --signing-algorithm "SHA256WITHRSA" \
             --validity Value=1,Type=DAYS \
-            --output json)
-          
-          CERTIFICATE_ARN=$(echo $CERTIFICATE_RESPONSE | jq -r '.CertificateArn')
+            --query 'CertificateArn'
+            --output text)
 
-          aws acm-pca wait certificate-issued --certificate-authority-arn ${{ secrets.PCA_ARN }} --certificate-arn $CERTIFICATE_ARN
+          aws acm-pca wait certificate-issued --certificate-authority-arn $PCA_ARN --certificate-arn $CERTIFICATE_ARN
           
           # Get the issued certificate
           CERTIFICATE=$(aws acm-pca get-certificate \
-            --certificate-authority-arn ${{ secrets.PCA_ARN }} \
+            --certificate-authority-arn $PCA_ARN \
             --certificate-arn $CERTIFICATE_ARN \
             --output json)
           
