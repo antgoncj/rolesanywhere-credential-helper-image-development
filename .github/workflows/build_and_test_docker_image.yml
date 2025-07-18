@@ -141,5 +141,4 @@ jobs:
       - name: Scan Docker image with Trivy
         run: |
           IMAGE_REFERENCE="${{ env.REGISTRY }}/${{ env.STAGING_REPOSITORY }}:${{ github.sha }}-${{matrix.platform}}"
-          export IMAGE_REFERENCE=$IMAGE_REFERENCE
-          ./docker_image_resources/tests/scripts/scan-image.sh
+          ./docker_image_resources/tests/scripts/scan-image.sh "$IMAGE_REFERENCE"

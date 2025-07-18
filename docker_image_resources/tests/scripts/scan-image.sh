@@ -1,6 +1,8 @@
 #!/bin/bash
 set -euo pipefail
 
+IMAGE_REFERENCE=$1
+
 SCAN_OUTPUT=$(trivy image --ignorefile docker_image_resources/tests/.trivyignore --no-progress --severity CRITICAL,HIGH,MEDIUM,LOW $IMAGE_REFERENCE --format json)
 
 # Initialize counts with default values
@@ -11,12 +13,22 @@ LOW_COUNT=0
 
 # Extract vulnerability counts by severity with error handling
 if [ -n "$SCAN_OUTPUT" ]; then
+
+# Function to count vulnerabilities of a specific severity
+count_vulnerabilities() {
+    local severity="$1"
+    echo "$SCAN_OUTPUT" | \
+        jq --arg sev "$severity" \
+        '[.Results[] | select(.Vulnerabilities != null) | .Vulnerabilities | map(select(.Severity == $sev)) | length] | add // 0' \
+        2>/dev/null || echo 0
+}
+
 # Check if we have vulnerabilities in the results
 if echo "$SCAN_OUTPUT" | jq -e '.Results[] | select(.Vulnerabilities != null)' > /dev/null; then
-    CRITICAL_COUNT=$(echo "$SCAN_OUTPUT" | jq '[.Results[] | select(.Vulnerabilities != null) | .Vulnerabilities | map(select(.Severity == "CRITICAL")) | length] | add // 0' 2>/dev/null || echo 0)
-    HIGH_COUNT=$(echo "$SCAN_OUTPUT" | jq '[.Results[] | select(.Vulnerabilities != null) | .Vulnerabilities | map(select(.Severity == "HIGH")) | length] | add // 0' 2>/dev/null || echo 0)
-    MEDIUM_COUNT=$(echo "$SCAN_OUTPUT" | jq '[.Results[] | select(.Vulnerabilities != null) | .Vulnerabilities | map(select(.Severity == "MEDIUM")) | length] | add // 0' 2>/dev/null || echo 0)
-    LOW_COUNT=$(echo "$SCAN_OUTPUT" | jq '[.Results[] | select(.Vulnerabilities != null) | .Vulnerabilities | map(select(.Severity == "LOW")) | length] | add // 0' 2>/dev/null || echo 0)
+    CRITICAL_COUNT=$(count_vulnerabilities "CRITICAL")
+    HIGH_COUNT=$(count_vulnerabilities "HIGH")
+    MEDIUM_COUNT=$(count_vulnerabilities "MEDIUM")
+    LOW_COUNT=$(count_vulnerabilities "LOW")
 else
     echo "No vulnerabilities found in scan results."
 fi
