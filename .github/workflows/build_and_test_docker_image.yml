@@ -104,19 +104,17 @@ jobs:
             --csr $CSR_CONTENT \
             --signing-algorithm "SHA256WITHRSA" \
             --validity Value=1,Type=DAYS \
-            --query 'CertificateArn'
+            --query 'CertificateArn' \
             --output text)
 
           aws acm-pca wait certificate-issued --certificate-authority-arn $PCA_ARN --certificate-arn $CERTIFICATE_ARN
           
           # Get the issued certificate
-          CERTIFICATE=$(aws acm-pca get-certificate \
-            --certificate-authority-arn $PCA_ARN \
-            --certificate-arn $CERTIFICATE_ARN \
-            --output json)
-          
-          # Write certificate directly to file
-          jq -r '.Certificate' <<< "$CERTIFICATE" > docker_image_resources/tests/certs/certificate.pem
+          aws acm-pca get-certificate \
+          --certificate-authority-arn $PCA_ARN \
+          --certificate-arn $CERTIFICATE_ARN \
+          --query 'Certificate' \
+          --output text > docker_image_resources/tests/certs/certificate.pem
           
       - name: Test the ${{matrix.platform}} Docker Image
         env:
