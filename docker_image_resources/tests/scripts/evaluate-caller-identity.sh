@@ -3,12 +3,11 @@ set -euo pipefail
 
 # Test credentials and capture the output
 echo "Running get-caller-identity..."
-CALLER_IDENTITY=$(aws sts get-caller-identity --output json)
-echo "sts get-caller-identity call succeeded"
+CALLER_ARN=$(aws sts get-caller-identity \
+    --query 'Arn' \
+    --output text)
 
-# Extract the ARN from the response
-# Using grep and cut instead of jq since it is not available by default in the aws-cli image
-CALLER_ARN=$(echo $CALLER_IDENTITY | grep -o '"Arn": "[^"]*' | cut -d'"' -f4)
+echo "sts get-caller-identity call succeeded"
 
 # Transform the caller ARN to match the IAM role ARN format
 # 1. Replace "sts" with "iam"

@@ -5,8 +5,6 @@ IMAGE_REFERENCE=$1
 
 SCAN_OUTPUT=$(trivy image --ignorefile docker_image_resources/tests/.trivyignore --no-progress --severity CRITICAL,HIGH,MEDIUM,LOW $IMAGE_REFERENCE --format json)
 
-echo $SCAN_OUTPUT
-
 # Initialize counts with default values
 CRITICAL_COUNT=0
 HIGH_COUNT=0
