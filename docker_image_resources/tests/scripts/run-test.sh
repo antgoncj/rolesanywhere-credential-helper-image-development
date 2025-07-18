@@ -47,7 +47,7 @@ LOG_OUTPUT=$(kubectl logs -f "${POD_NAME}" -c test-client)
 echo "$LOG_OUTPUT"
 
 # Check if the logs contain the success message
-if echo "$LOG_OUTPUT" | grep -q "Test passed successfully"; then
+if echo "$LOG_OUTPUT" | grep -q "Test pased successfully"; then
   # Cleanup
   echo "Cleaning up..."
   kubectl delete pod "${POD_NAME}" --grace-period=0 --force
