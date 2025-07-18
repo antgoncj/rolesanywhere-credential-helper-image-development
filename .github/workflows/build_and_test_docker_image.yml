@@ -124,17 +124,13 @@ jobs:
           ROLE_ARN : ${{ secrets.TESTING_ROLE_ARN }}
           VERSION : ${{ github.sha }}-${{matrix.platform}}
         run: |
-          # Make scripts executable
-          chmod +x docker_image_resources/tests/*.sh
-          chmod +x docker_image_resources/tests/scripts/*.sh
-          
           # Run basic version test
           echo "Testing version command:"
           docker run --rm ${{ env.REGISTRY }}/${{ env.STAGING_REPOSITORY }}:${{ github.sha }}-${{matrix.platform}} version
 
-          # Set up KinD and run tests
+          # Run Integration Tests 
           cd docker_image_resources
-          ./tests/run-tests.sh || exit 1
+          ./tests/run-tests.sh
           
       - name: Install Trivy Image Scanner 
         uses: aquasecurity/setup-trivy@v0.2.0
