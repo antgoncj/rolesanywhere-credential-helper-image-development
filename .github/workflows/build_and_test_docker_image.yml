@@ -144,6 +144,6 @@ jobs:
           
           # Run Trivy scan and capture JSON output directly
           echo "Generating JSON scan results..."
-          SCAN_OUTPUT=$(trivy image --ignorefile docker_image_resources/tests/.trivyignore --no-progress --severity CRITICAL,HIGH,MEDIUM,LOW $IMAGE_REFERENCE --format json)
+          echo "SCAN_OUTPUT=$(trivy image --ignorefile docker_image_resources/tests/.trivyignore --no-progress --severity CRITICAL,HIGH,MEDIUM,LOW $IMAGE_REFERENCE --format json)" >> $GITHUB_ENV
 
           ./docker_image_resources/tests/scripts/scan-image.sh
