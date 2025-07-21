@@ -2,8 +2,9 @@
 # Version pinned to most recent stable release
 FROM --platform=$TARGETPLATFORM public.ecr.aws/amazonlinux/amazonlinux:2023.7.20250527.1 AS builder
 
-# Add build argument for architecture
+# Add build arguments
 ARG TARGETARCH
+ARG VERSION
 
 # Install build dependencies
 RUN dnf install -y \
@@ -28,6 +29,9 @@ RUN make release
 # Version pinned to most recent stable release
 FROM --platform=$TARGETPLATFORM public.ecr.aws/eks-distro-build-tooling/eks-distro-minimal-base-glibc:2025-06-11-1749625329.2023
 
+# Add build argument for version in final stage
+ARG VERSION
+
 # Copy the credential helper from the builder stage
 COPY --from=builder /build/rolesanywhere-credential-helper/build/bin/aws_signing_helper /usr/local/bin/
 
@@ -38,5 +42,5 @@ ENTRYPOINT ["/usr/local/bin/aws_signing_helper"]
 
 # Add labels
 LABEL maintainer="AWS IAM Roles Anywhere" \
-      version="1.7.0" \
+      version="${VERSION}" \
       description="AWS IAM Roles Anywhere Credential Helper Docker Image"

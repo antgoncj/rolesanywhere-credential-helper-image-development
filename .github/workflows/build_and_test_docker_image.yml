@@ -40,6 +40,13 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
+      - name: Extract version from Makefile
+        id: extract-version
+        run: |
+          VERSION=$(grep '^VERSION=' Makefile | cut -d'=' -f2)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Extracted version: $VERSION"
+
       - name: Build and Push Docker image
         uses: docker/build-push-action@v5
         with:
@@ -47,9 +54,11 @@ jobs:
           file: ./docker_image_resources/Dockerfile
           platforms: linux/${{ matrix.platform }}
           push: true
+          build-args: |
+            VERSION=${{ steps.extract-version.outputs.version }}
           tags: |
             ${{ env.REGISTRY }}/${{ env.STAGING_REPOSITORY }}:${{ github.sha }}-${{ matrix.platform }}
-          provenance: false # provenance must be disabled in order to prevent manifest creation failures 
+          provenance: false # provenance must be disabled in order to prevent manifest creation failures
 
   test-and-scan:
     name: Test and Scan Docker Images
