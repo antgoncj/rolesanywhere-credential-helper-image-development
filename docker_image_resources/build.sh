@@ -11,7 +11,7 @@ if [ $(uname -m) = "x86_64" ]; then
 elif [ $(uname -m) = "aarch64" ]; then
   PLATFORM=arm64
 else
-  echo "Error: Invalid platform. Supported values are 'amd64' or 'arm64'"
+  echo "Error: Invalid platform. Supported platforms are arm64 and amd64 linux."
   exit 1
 fi
 
