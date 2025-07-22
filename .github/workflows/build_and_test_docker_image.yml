@@ -88,7 +88,7 @@ jobs:
       
       - name: Set up Test Environment
         env:
-          PCA_ARN : ${{ secrets.PCA_ARN }} 
+          PCA_ARN: ${{ secrets.PCA_ARN }} 
         run: |
           docker pull ${{ env.REGISTRY }}/${{ env.STAGING_REPOSITORY }}:${{ github.sha }}-${{matrix.platform}}
             
@@ -100,10 +100,10 @@ jobs:
           
       - name: Test the ${{matrix.platform}} Docker Image
         env:
-          TRUST_ANCHOR_ARN : ${{ secrets.TRUST_ANCHOR_ARN }}
+          TRUST_ANCHOR_ARN: ${{ secrets.TRUST_ANCHOR_ARN }}
           PROFILE_ARN: ${{ secrets.PROFILE_ARN }}
-          ROLE_ARN : ${{ secrets.TESTING_ROLE_ARN }}
-          VERSION : ${{ github.sha }}-${{matrix.platform}}
+          ROLE_ARN: ${{ secrets.TESTING_ROLE_ARN }}
+          VERSION: ${{ github.sha }}-${{matrix.platform}}
         run: |
           # Run basic version test
           echo "Testing version command:"
