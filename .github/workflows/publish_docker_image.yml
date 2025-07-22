@@ -12,7 +12,7 @@ env:
 
 jobs:
   publish-images-to-ecr:
-    name: Publish built images to ECR 
+    name: Publish Built Images to ECR 
     runs-on: ubuntu-24.04
     permissions:
       contents: read
@@ -60,16 +60,16 @@ jobs:
             ${{ env.REGISTRY }}/${{ env.PUBLIC_REPOSITORY }}@$ARM64_IMAGE_SHA 
           echo "manifest_sha=$(docker manifest push ${{ env.REGISTRY }}/${{ env.PUBLIC_REPOSITORY }}:latest)" >> "$GITHUB_OUTPUT"
 
-      - name: setup Notation CLI
+      - name: Setup Notation CLI
         uses: notaryproject/notation-action/setup@v1
 
-      - name: Retrieve AWS Signer Checksum value 
+      - name: Retrieve AWS Signer Checksum Value 
         id: checksum
         run: |
           curl -LO ${{ env.AWS_SIGNER_PLUGIN_LINK}}
           echo "signer_sha=$(sha256sum ${{env.AWS_SIGNER_PLUGIN_FILENAME}} | cut -f1 -d' ')" >> "$GITHUB_OUTPUT"
 
-      - name: Sign the amd64 image with notation 
+      - name: Sign the Images and Manifest with Notation 
         uses: notaryproject/notation-action/sign@v1
         with:
           plugin_name: com.amazonaws.signer.notation.plugin

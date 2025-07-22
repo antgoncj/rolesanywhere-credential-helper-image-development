@@ -18,7 +18,7 @@ WORKDIR /build/rolesanywhere-credential-helper
 # Set GOARCH for cross-compilation
 ENV CGO_ENABLED=1
 ENV GOOS=linux
-ENV GOARCH=${TARGETARCH:-amd64}
+ENV GOARCH=${TARGETARCH}
 
 COPY .. .
 

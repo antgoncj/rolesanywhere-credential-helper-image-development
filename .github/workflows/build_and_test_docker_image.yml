@@ -16,7 +16,7 @@ permissions:
 
 jobs:
   build-and-push:
-    name: Build Docker Images
+    name: Build Docker Images and Push to Staging Repository
     strategy:
       matrix:
         include:
@@ -40,7 +40,7 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Extract version from Makefile
+      - name: Extract Version from Makefile
         id: extract-version
         run: |
           VERSION=$(grep '^VERSION=' Makefile | cut -d'=' -f2)
@@ -73,10 +73,10 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - name: Checkout repository
+      - name: Checkout Repository
         uses: actions/checkout@v4
         
-      - name: Configure AWS credentials
+      - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@master
         with:
           role-to-assume: ${{ secrets.GH_ACCESS_ROLE }}
@@ -86,7 +86,7 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
       
-      - name: Set up test environment
+      - name: Set up Test Environment
         env:
           PCA_ARN : ${{ secrets.PCA_ARN }} 
         run: |
