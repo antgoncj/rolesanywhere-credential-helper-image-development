@@ -38,12 +38,12 @@ fi
 echo ""
 
 # Run update mode non root test
-echo "=== Running Update with Credentials File Test ==="
-if ./tests/scripts/run-test.sh update-credentials-file; then
-  echo "Update with Credentials File test PASSED"
+echo "=== Running Update with Custom Credentials File Test ==="
+if ./tests/scripts/run-test.sh update-custom-credentials-file; then
+  echo "Update with Custom Credentials File test PASSED"
 else
-  echo "Update with Credentials File test FAILED"
-  FAILED_TESTS+=("update with credentials file")
+  echo "Update with Custom Credentials File test FAILED"
+  FAILED_TESTS+=("update with custom credentials file")
 fi
 
 echo ""

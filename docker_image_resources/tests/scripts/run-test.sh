@@ -9,7 +9,7 @@ export REPOSITORY="${REPOSITORY:-iamra-credential-helper}"
 # Simple argument handling
 if [ $# -lt 1 ]; then
   echo "Usage: $0 <test-case>"
-  echo "Available test cases: serve, update, update-credentials-file"
+  echo "Available test cases: serve, update, update-custom-credentials-file"
   exit 1
 fi
 
