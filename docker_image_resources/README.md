@@ -34,7 +34,7 @@ Follow these steps to build and test the Docker image:
    ```bash
    ./tests/scripts/run-test.sh <test-case-name>
    ```
-   Available test cases: `serve`, `update`, `update-credentials-file`
+   Available test cases: `serve`, `update`, `update-custom-credentials-file`
 
 ## Environment Variables
 
@@ -113,7 +113,7 @@ You can run individual tests using the `run-test.sh` script:
 ```
 
 Where:
-- `<test-case-name>` is one of: `serve`, `update`, or `update-credentials-file`
+- `<test-case-name>` is one of: `serve`, `update`, or `update-custom-credentials-file`
 - `[timeout]` is an optional parameter specifying how long to wait for the pod to be ready (default: 30 seconds)
 
 ### Test Environment Setup
@@ -139,7 +139,7 @@ The Docker image is tested in three different modes:
    - Test validates credentials using the AWS STS get-caller-identity API
 
 3. **Update Mode (using AWS_SHARED_CREDENTIALS_FILE)** - Tests the credential helper in update mode without root privileges
-   - Configuration: `tests/pod_configurations/update-credentials-file.yaml`
+   - Configuration: `tests/pod_configurations/update-custom-credentials-file.yaml`
    - Uses environment variables to specify a custom credentials file location
    - Test validates credentials using the AWS STS get-caller-identity API
 
@@ -191,7 +191,7 @@ containers:
 - name: credential-helper
   image: local/iamra-credential-helper:latest
   securityContext:
-      runAsUser: 0 #Necessary for write to root directory
+      runAsUser: 0 # Necessary for write to root directory
   args:
   - "update"
   - "--certificate"

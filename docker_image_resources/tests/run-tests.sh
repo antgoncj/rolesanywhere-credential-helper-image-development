@@ -3,9 +3,6 @@ set -euo pipefail
 
 echo "=== Starting IAM Roles Anywhere Credential Helper Tests ==="
 
-#Make scripts executable
-chmod +x tests/scripts/*.sh
-
 # Setup KinD cluster, load image and config maps
 echo "Setting up test environment..."
 ./tests/setup.sh

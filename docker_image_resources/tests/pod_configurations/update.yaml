@@ -6,9 +6,9 @@ spec:
   containers:
   - name: credential-helper
     securityContext:
-      runAsUser: 0 #Necessary for write to root directory
+      runAsUser: 0 # Necessary for write to root directory
     image: $REGISTRY/$REPOSITORY:$VERSION
-    imagePullPolicy: Never #Needed when using a local image
+    imagePullPolicy: Never # Needed when using a local image
     resources:
       requests:
         memory: "128Mi"
@@ -70,4 +70,4 @@ spec:
   - name: test-volume
     configMap:
       name: test-resources
-      defaultMode: 0755 #Ensure client test script is executable
+      defaultMode: 0755 # Ensure client test script is executable
