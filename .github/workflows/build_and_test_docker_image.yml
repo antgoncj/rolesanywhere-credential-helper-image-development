@@ -2,7 +2,7 @@ name: Build and Test Credential Helper Docker Image
 
 on:
   push:
-    branches: [ main ]
+    branches: [ test-workflow-behavior-on-push-and-tag ]
 
 env:
   STAGING_REGISTRY: ${{secrets.REGISTRY}}
