@@ -118,7 +118,9 @@ jobs:
           # Run basic version test
           echo "Testing version command:"
           docker run --rm ${{ env.STAGING_REGISTRY }}/${{ env.STAGING_REPOSITORY }}:${{ github.sha }}-${{matrix.platform}} version
-
+          
+          # Set registry environment variable for test suite
+          REGISTRY=${{ env.STAGING_REGISTRY }}
           # Run Integration Tests 
           cd docker_image_resources
           ./tests/run-tests.sh
