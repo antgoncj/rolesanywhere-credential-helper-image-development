@@ -13,8 +13,8 @@ jobs:
       contents: read
       id-token: write   # This is required for requesting the JWT for AWS authentication
     env:
-      PUBLIC_REGISTRY: ${{secrets.REGISTRY}}
-      PUBLIC_REPOSITORY: ${{secrets.PUBLIC_REPOSITORY}}
+      PUBLIC_REGISTRY: public.ecr.aws/q9k0z0e2
+      PUBLIC_REPOSITORY: test-dual-creds
       STAGING_REGISTRY: ${{secrets.REGISTRY}}
       STAGING_REPOSITORY: ${{secrets.STAGING_REPOSITORY}}
       AWS_REGION: us-east-1
@@ -33,6 +33,12 @@ jobs:
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Login to Amazon ECR
+        id: login-ecr-public
+        uses: aws-actions/amazon-ecr-login@v2
+        with: 
+          registry-type: public
 
       - name: Tag Images and Push to ECR
         id: tag_and_push  
