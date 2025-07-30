@@ -3,7 +3,7 @@ name: Publish Credential Helper Docker Image
 on:
   push:
     tags: ['v*.*.*']
-  workflow_dispatch: # temporarily introduced for initial push to repo. Will be removed in a subsequent commit
+  workflow_dispatch: # Temporarily introduced for initial push to repo. Will be removed in a subsequent commit after the 1.7.0 image is released
 
 jobs:
   publish-images-to-ecr:
