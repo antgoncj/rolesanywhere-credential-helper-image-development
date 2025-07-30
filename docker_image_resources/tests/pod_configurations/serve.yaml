@@ -6,7 +6,7 @@ spec:
   containers:
   - name: credential-helper
     image: $REGISTRY/$REPOSITORY:$VERSION
-    imagePullPolicy: Never #Needed when using a local image
+    imagePullPolicy: Never # Needed when using a local image
     resources:
       requests:
         memory: "128Mi"
