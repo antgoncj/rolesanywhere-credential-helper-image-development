@@ -90,8 +90,8 @@ jobs:
         env:
           PCA_ARN: ${{ secrets.PCA_ARN }} 
         run: |
-          max_attempts=5
-          attempt=1
+          max_attempts=3
+          attempt=0
           until docker pull ${{ env.STAGING_REGISTRY }}/${{ env.STAGING_REPOSITORY }}:${{ github.sha }}-${{matrix.platform}}; do
               if [ $attempt -ge $max_attempts ]; then
                   echo "Failed to pull image after $max_attempts attempts"
