@@ -90,15 +90,15 @@ jobs:
         env:
           PCA_ARN: ${{ secrets.PCA_ARN }} 
         run: |
-          max_attempts=3
-          attempt=0
+          MAX_PULL_ATTEMPTS=3
+          PULL_ATTEMPT=0
           until docker pull ${{ env.STAGING_REGISTRY }}/${{ env.STAGING_REPOSITORY }}:${{ github.sha }}-${{matrix.platform}}; do
-              if [ $attempt -ge $max_attempts ]; then
-                  echo "Failed to pull image after $max_attempts attempts"
+              PULL_ATTEMPT=$((PULL_ATTEMPT + 1))
+              if [ $PULL_ATTEMPT -ge $MAX_PULL_ATTEMPTS ]; then
+                  echo "Failed to pull image after $MAX_PULL_ATTEMPTS attempts"
                   exit 1
               fi
-              echo "Pull attempt $attempt failed, waiting before retry..."
-              attempt=$((attempt + 1))
+              echo "Pull attempt $PULL_ATTEMPT failed, waiting before retry..."
               sleep 10
           done
             
