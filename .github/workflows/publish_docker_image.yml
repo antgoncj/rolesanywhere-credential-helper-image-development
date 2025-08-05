@@ -13,8 +13,8 @@ jobs:
       contents: read
       id-token: write   # This is required for requesting the JWT for AWS authentication
     env:
-      PUBLIC_REGISTRY: public.ecr.aws/q9k0z0e2
-      PUBLIC_REPOSITORY: test-dual-creds
+      PUBLIC_REGISTRY: ${{secrets.REGISTRY}}
+      PUBLIC_REPOSITORY: ${{secrets.PUBLIC_REPOSITORY}}
       STAGING_REGISTRY: ${{secrets.REGISTRY}}
       STAGING_REPOSITORY: ${{secrets.STAGING_REPOSITORY}}
       AWS_REGION: us-east-1
