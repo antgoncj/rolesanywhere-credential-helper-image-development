@@ -8,7 +8,7 @@ ARG VERSION
 
 # Install build dependencies
 RUN dnf install -y \
-    golang-1.24.5-1.amzn2023.0.1 \
+    golang-1.24.6-1.amzn2023.0.1 \
     make \
     && dnf clean all
 
