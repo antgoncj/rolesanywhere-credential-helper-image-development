@@ -5,8 +5,8 @@ on:
     branches: [ post-image-release-misc-fixes ]
 
 env:
-  STAGING_REGISTRY: 264252446756.dkr.ecr.us-east-1.amazonaws.com
-  STAGING_REPOSITORY: credential-helper-staging
+  STAGING_REGISTRY: ${{secrets.REGISTRY}}
+  STAGING_REPOSITORY: ${{secrets.STAGING_REPOSITORY}}
   AWS_REGION: us-east-1
 
 permissions:
@@ -33,7 +33,7 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@master
         with:
-          role-to-assume: arn:aws:iam::264252446756:role/GithubActionsAccessRole
+          role-to-assume: ${{ secrets.GH_ACCESS_ROLE }} 
           aws-region: ${{ env.AWS_REGION }}
           
       - name: Login to Amazon ECR
@@ -79,7 +79,7 @@ jobs:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@master
         with:
-          role-to-assume: arn:aws:iam::264252446756:role/GithubActionsAccessRole
+          role-to-assume: ${{ secrets.GH_ACCESS_ROLE }} 
           aws-region: ${{ env.AWS_REGION }}
           
       - name: Login to Amazon ECR
@@ -88,7 +88,7 @@ jobs:
       
       - name: Set up Test Environment
         env:
-          PCA_ARN: arn:aws:acm-pca:us-east-1:264252446756:certificate-authority/807cc589-2b5a-4976-a0d8-eeca654e7916 
+          PCA_ARN: ${{ secrets.PCA_ARN }} 
         run: |
           MAX_PULL_ATTEMPTS=3
           PULL_ATTEMPT=0
@@ -110,9 +110,9 @@ jobs:
           
       - name: Test the ${{matrix.platform}} Docker Image
         env:
-          TRUST_ANCHOR_ARN: arn:aws:rolesanywhere:us-east-1:264252446756:trust-anchor/11436419-d765-4a1f-a65e-441a197ed5fc
-          PROFILE_ARN: arn:aws:rolesanywhere:us-east-1:264252446756:profile/24a0d47d-9e88-4be8-97fc-a55422105b6c
-          ROLE_ARN: arn:aws:iam::264252446756:role/CredentialHelperTestingRole
+          TRUST_ANCHOR_ARN: ${{ secrets.TRUST_ANCHOR_ARN }}
+          PROFILE_ARN: ${{ secrets.PROFILE_ARN }}
+          ROLE_ARN: ${{ secrets.TESTING_ROLE_ARN }}
           VERSION: ${{ github.sha }}-${{matrix.platform}}
           REGISTRY: ${{ env.STAGING_REGISTRY }} # Needed due to test suite using this variable
         run: |
