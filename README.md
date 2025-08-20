@@ -28,6 +28,36 @@ make release
 
 After building, you should see the `aws_signing_helper` binary built for your system at `build/bin/aws_signing_helper`. Usage can be found in [AWS's documentation](https://docs.aws.amazon.com/rolesanywhere/latest/userguide/credential-helper.html). A later section also goes into how you can use the scripts provided in this repository to test out the credential helper binary.
 
+## Docker Image
+
+The AWS IAM Roles Anywhere Credential Helper is also available as a Docker image, providing a containerized deployment option for environments like Kubernetes, Docker Compose, or other container orchestration platforms.
+
+### When to Use the Docker Image
+
+The Docker image is recommended when:
+
+- **Container environments**: You're deploying in Kubernetes, Docker Swarm, or other container orchestration platforms
+- **Consistent runtime**: You need a consistent, reproducible runtime environment across different systems. Particularly useful for environments where glibc is not available (ex. alpine linux)
+- **Simplified deployment**: You want to avoid managing Go dependencies and build processes on target systems
+
+### Quick Start
+
+The official Docker image is available from the AWS ECR Public Gallery at [gallery.ecr.aws/rolesanywhere/credential-helper](https://gallery.ecr.aws/rolesanywhere/credential-helper).
+
+### Deployment Modes
+
+The Docker image supports the same three operational modes as the binary:
+
+- **Serve mode**: Provides credentials via a local HTTP endpoint (port 9911 by default)
+- **Update mode**: Writes credentials to AWS credential files
+- **Credential process mode**: Returns credentials in JSON format for one-time use
+
+For detailed configuration examples and Kubernetes deployment templates, see the [Docker image documentation](docker_image_resources/README.md).
+
+### Image Verification
+
+For security-conscious deployments, you can verify the authenticity of Docker images using notation. See the [image verification guide](docker_image_resources/notation/README.md) for detailed instructions on setting up and using notation to verify image signatures and attestations.
+
 ## Diagnostic Command Tools
 
 ### read-certificate-data
