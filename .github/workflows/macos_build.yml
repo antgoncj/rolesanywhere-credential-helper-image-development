@@ -36,13 +36,13 @@ jobs:
       - name: Set Environment Variables for Sonoma Compatability in x86
         run: |
           if [[ "${{ matrix.arch }}" == "X86_64" ]]; then
-            export MACOSX_DEPLOYMENT_TARGET="14.0"
-            export CGO_CFLAGS="-mmacosx-version-min=14.0" 
-            export CGO_LDFLAGS="-mmacosx-version-min=14.0"
+            echo "MACOSX_DEPLOYMENT_TARGET=14.0" >> $GITHUB_ENV
+            echo "CGO_CFLAGS=-mmacosx-version-min=14.0" >> $GITHUB_ENV
+            echo "CGO_LDFLAGS=-mmacosx-version-min=14.0" >> $GITHUB_ENV
             
-            echo $MACOSX_DEPLOYMENT_TARGET
-            echo $CGO_CFLAGS
-            echo $CGO_LDFLAGS
+            echo "Set MACOSX_DEPLOYMENT_TARGET=14.0"
+            echo "Set CGO_CFLAGS=-mmacosx-version-min=14.0"
+            echo "Set CGO_LDFLAGS=-mmacosx-version-min=14.0"
           fi
 
       - name: Build Project
