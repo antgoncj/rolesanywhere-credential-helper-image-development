@@ -2,7 +2,7 @@ name: MacOS build and test rolesanywhere-credential-helper
 on:
   workflow_dispatch:
   push:
-    branches: [ main ]
+    branches: [ main, feature/upgrade-to-goland-1.24.11 ]
 
 permissions:
   statuses: write
