@@ -1,5 +1,6 @@
 name: MacOS build and test rolesanywhere-credential-helper
 on:
+  workflow_dispatch:
   push:
     branches: [ main ]
 
@@ -14,7 +15,7 @@ jobs:
     strategy:
       matrix:
         include:
-          - runner_image: macos-13
+          - runner_image: macos-15-intel
             arch: "X86_64"
             display_name: "MacOS X86_64"
           - runner_image: macos-14
@@ -31,11 +32,28 @@ jobs:
           go-version-file: 'go.mod'
           cache: true
 
+
+      - name: Set Environment Variables for Sonoma Compatability in x86
+        run: |
+          if [[ "${{ matrix.arch }}" == "X86_64" ]]; then
+            export MACOSX_DEPLOYMENT_TARGET="14.0"
+            export CGO_CFLAGS="-mmacosx-version-min=14.0" 
+            export CGO_LDFLAGS="-mmacosx-version-min=14.0"
+            
+            echo $MACOSX_DEPLOYMENT_TARGET
+            echo $CGO_CFLAGS
+            echo $CGO_LDFLAGS
+          fi
+
       - name: Build Project
         run: |
+          echo $MACOSX_DEPLOYMENT_TARGET
+          echo $CGO_CFLAGS
+          echo $CGO_LDFLAGS
           echo "Building on ${{ matrix.display_name }}"
           make release
           make test
+          otool -l build/bin/aws_signing_helper
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4.2.0
