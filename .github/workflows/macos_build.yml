@@ -53,11 +53,11 @@ jobs:
           echo "Building on ${{ matrix.display_name }}"
           make release
           make test
-          otool -l build/bin/aws_signing_helper
+          otool -l -h build/bin/aws_signing_helper
 
       - name: 'Upload Artifact'
         uses: actions/upload-artifact@v4
         with:
-          name: aws_signing_helper
+          name: aws_signing_helper_${{matrix.arch}}
           path: build/bin/aws_signing_helper
           retention-days: 1

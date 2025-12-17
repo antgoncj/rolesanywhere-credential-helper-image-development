@@ -15,13 +15,13 @@ RUN dnf install -y \
 ENV GOPATH=/root/go \
     PATH=/root/go/bin:$PATH \
     HOME=/root \
-    CGO_ENABLED=1
+    GOPROXY=direct
  
 RUN mkdir -p /root/go/bin && \
-    go install golang.org/dl/go1.24.5@latest && \
-    go1.24.5 download && \
+    go install golang.org/dl/go1.24.11@latest && \
+    go1.24.11 download && \
     rm -rf /usr/local/go && \
-    ln -s /root/sdk/go1.24.5 /usr/local/go
+    ln -s /root/sdk/go1.24.11 /usr/local/go
  
 ENV GOROOT=/usr/local/go \
     PATH=/usr/local/go/bin:/root/go/bin:$PATH
